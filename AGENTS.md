@@ -46,3 +46,5 @@ pnpm preview  # Preview production build
 ## Project Patterns
 - See `pattern.md` for project-specific conventions, module shapes, and best practices
 - Reference this file for routing, API, forms, styling, and performance patterns
+- **Always generate tests when creating new components, pages, hooks, or utilities**
+- Run `pnpm test` before completing any feature work

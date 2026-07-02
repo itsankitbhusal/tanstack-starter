@@ -406,7 +406,7 @@ Aim for:
 - Run `pnpm generate-routes` to regenerate the route tree.
 - Add API functions using `createServerFn` from `@tanstack/react-start`.
 - Add pages with proper form validation using React Hook Form + Zod.
-- Add tests for new components and utilities.
+- **Add tests for new components, hooks, and utilities.**
 - Add shared components to `src/components/`.
 - Run `pnpm build` to verify.
 - Run `pnpm test` to ensure tests pass.
