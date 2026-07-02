@@ -226,11 +226,187 @@ function Parent() {
 }
 ```
 
-## 14. New Feature Checklist
+## 14. Testing
+
+This project uses **Vitest** with **React Testing Library**.
+
+### Running Tests
+
+```bash
+pnpm test        # Run tests once
+pnpm test:watch # Run tests in watch mode
+```
+
+### Test Organization
+
+- Put tests alongside source files with `.test.ts` or `.spec.ts` suffix.
+- Use co-located tests: `utils.ts` → `utils.test.ts`
+- Feature tests: `src/components/feature/Feature.tsx` → `src/components/feature/Feature.test.tsx`
+
+```text
+src/
+  components/
+    Button/
+      Button.tsx
+      Button.test.tsx
+  lib/
+    utils.ts
+    utils.test.ts
+  hooks/
+    use-counter.ts
+    use-counter.test.ts
+```
+
+### Unit Testing
+
+Test pure functions and utilities in isolation.
+
+```tsx
+// src/lib/utils.test.ts
+import { describe, it, expect } from 'vitest'
+import { cn } from './utils'
+
+describe('cn', () => {
+  it('merges class names', () => {
+    expect(cn('foo', 'bar')).toBe('foo bar')
+  })
+
+  it('handles conditional classes', () => {
+    expect(cn('foo', false && 'bar', 'baz')).toBe('foo baz')
+  })
+})
+```
+
+### Component Testing
+
+Use React Testing Library for component tests. Test user interactions, not implementation details.
+
+```tsx
+// src/components/Button/Button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { Button } from './Button'
+
+describe('Button', () => {
+  it('renders children', () => {
+    render(<Button>Click me</Button>)
+    expect(screen.getByRole('button')).toHaveTextContent('Click me')
+  })
+
+  it('calls onClick handler', () => {
+    const handleClick = vi.fn()
+    render(<Button onClick={handleClick}>Click me</Button>)
+    
+    fireEvent.click(screen.getByRole('button'))
+    
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows loading state', () => {
+    render(<Button loading>Submit</Button>)
+    expect(screen.getByRole('button')).toBeDisabled()
+  })
+})
+```
+
+### Hook Testing
+
+Create a test wrapper component or use `@testing-library/react-hooks`.
+
+```tsx
+import { renderHook, act } from '@testing-library/react'
+import { useCounter } from './use-counter'
+
+describe('useCounter', () => {
+  it('increments count', () => {
+    const { result } = renderHook(() => useCounter())
+    
+    act(() => {
+      result.current.increment()
+    })
+    
+    expect(result.current.count).toBe(1)
+  })
+})
+```
+
+### Testing Forms
+
+Test form validation, submission, and error states.
+
+```tsx
+describe('UserForm', () => {
+  it('shows validation errors', async () => {
+    render(<UserForm />)
+    
+    fireEvent.submit(screen.getByRole('form'))
+    
+    expect(await screen.findByText('Name is required')).toBeInTheDocument()
+  })
+
+  it('submits form data', async () => {
+    const onSubmit = vi.fn()
+    render(<UserForm onSubmit={onSubmit} />)
+    
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'John' } })
+    fireEvent.submit(screen.getByRole('form'))
+    
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'John' })
+  })
+})
+```
+
+### Testing Server Functions
+
+Mock server functions for testing.
+
+```tsx
+import { createServerFn } from '@tanstack/react-start'
+
+const getUser = createServerFn({ method: 'GET' })
+  .handler(async () => ({ id: '1', name: 'John' }))
+
+// In test, mock the implementation
+vi.mock('@tanstack/react-start', async () => {
+  const actual = await vi.importActual('@tanstack/react-start')
+  return {
+    ...actual,
+    createServerFn: () => ({
+      handler: () => vi.fn().mockResolvedValue({ id: '1', name: 'John' })
+    })
+  }
+})
+```
+
+### Best Practices
+
+1. **Test behavior, not implementation** - Test what users see, not how it's implemented
+2. **Use semantic queries** - Prefer `getByRole`, `getByLabelText` over `getByTestId`
+3. **Mock external dependencies** - API calls, browser APIs, third-party libs
+4. **Keep tests fast** - Unit tests should run in milliseconds
+5. **One assertion per test** - Easier to diagnose failures
+6. **Use descriptive test names** - `it('should validate email format')` not `it('test1')`
+
+### Test Coverage
+
+Run with coverage:
+
+```bash
+pnpm test --coverage
+```
+
+Aim for:
+- **Utilities/hooks**: 90%+ coverage
+- **Components**: Critical paths covered
+- **Integration**: Key user flows covered
+
+## 15. New Feature Checklist
 
 - Add routes in `src/routes/` using `createFileRoute`.
 - Run `pnpm generate-routes` to regenerate the route tree.
 - Add API functions using `createServerFn` from `@tanstack/react-start`.
 - Add pages with proper form validation using React Hook Form + Zod.
+- Add tests for new components and utilities.
 - Add shared components to `src/components/`.
 - Run `pnpm build` to verify.
+- Run `pnpm test` to ensure tests pass.
