@@ -42,3 +42,7 @@ pnpm preview  # Preview production build
 ## Next Steps
 - Add routes in `src/routes/`
 - Run `pnpm generate-routes` to regenerate route tree after adding routes
+
+## Project Patterns
+- See `pattern.md` for project-specific conventions, module shapes, and best practices
+- Reference this file for routing, API, forms, styling, and performance patterns
