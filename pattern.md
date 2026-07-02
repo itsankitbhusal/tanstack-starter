@@ -8,6 +8,7 @@ This file captures the project conventions that should guide new work. Treat it 
 - Keep changes scoped to the module or shared utility needed for the task. Avoid broad refactors while adding a feature.
 - Preserve API contracts and payload shapes unless the backend contract requires a minimal adapter.
 - Prefer existing shared components and hooks over introducing new abstractions.
+- **State Management**: Use **Zustand** for global client state. Use URL/search params for server state.
 
 ## 2. Routing and Navigation
 
@@ -56,7 +57,88 @@ src/
 - Use React Query patterns for client-side caching when needed.
 - Keep query keys stable using `[featureName, params]`.
 
-## 5. Lists and Tables
+## 5. State Management
+
+This project uses **Zustand** for global client-side state.
+
+### When to Use Zustand
+
+- **Global UI state**: theme, sidebar open/close, modals
+- **User session**: auth token, user profile
+- **Client-side cache**: data not on server (preferences, drafts)
+- **Complex local state**: multi-step forms, complex interactions
+
+### When NOT to Use Zustand
+
+- Server data → use `createServerFn` + React Query
+- URL state → use search params
+- Form state → use React Hook Form
+
+### Zustand Pattern
+
+```typescript
+// src/stores/user-store.ts
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+interface UserState {
+  user: User | null
+  token: string | null
+  setUser: (user: User | null) => void
+  setToken: (token: string | null) => void
+  logout: () => void
+}
+
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      setUser: (user) => set({ user }),
+      setToken: (token) => set({ token }),
+      logout: () => set({ user: null, token: null }),
+    }),
+    { name: 'user-storage' }
+  )
+)
+```
+
+### Store Organization
+
+```
+src/
+  stores/
+    user-store.ts      # Auth/user state
+    ui-store.ts        # UI state (theme, sidebar)
+    index.ts           # Barrel export
+```
+
+### Testing Zustand
+
+```typescript
+// user-store.test.ts
+import { useUserStore } from './user-store'
+
+describe('useUserStore', () => {
+  beforeEach(() => {
+    useUserStore.getState().logout() // Reset before each test
+  })
+
+  it('should set user', () => {
+    const user = { id: '1', name: 'John' }
+    useUserStore.getState().setUser(user)
+    expect(useUserStore.getState().user).toEqual(user)
+  })
+
+  it('should logout', () => {
+    useUserStore.getState().setUser({ id: '1', name: 'John' })
+    useUserStore.getState().logout()
+    expect(useUserStore.getState().user).toBeNull()
+  })
+})
+```
+
+## 6. Lists and Tables
 
 - Use TanStack Table or a table component from shadcn/ui.
 - Keep table state in URL params for shareability.
@@ -70,7 +152,7 @@ const [searchParams, setSearchParams] = useSearchParams();
 setSearchParams({ page: '1', search: 'query' }, { replace: true });
 ```
 
-## 6. Forms
+## 7. Forms
 
 - Use React Hook Form with Zod validation.
 - Use shared form components from shadcn/ui (`Form`, `FormField`, `FormInput`, etc.).
@@ -78,38 +160,38 @@ setSearchParams({ page: '1', search: 'query' }, { replace: true });
 - Show loading state while fetching edit data.
 - On submit, call the mutation and navigate back.
 
-## 7. UI Components
+## 8. UI Components
 
 - Use shadcn/ui components as the primary UI library.
 - Use Tailwind CSS for styling with the project's design tokens.
 - Keep components in `src/components/ui/` for shared components.
 - Keep feature-specific components near the feature.
 
-## 8. Styling
+## 9. Styling
 
 - Use Tailwind CSS utility classes.
 - Access design tokens via CSS variables defined in `src/styles.css`.
 - Keep operational pages compact and scannable.
 - Ensure responsiveness for mobile, tablet, and desktop.
 
-## 9. Environment Variables
+## 10. Environment Variables
 
 - Use `VITE_` prefix for client-side environment variables.
 - Access via `import.meta.env.VITE_*`.
 - Do not expose secrets to the client.
 
-## 10. Verification
+## 11. Verification
 
 - Run `pnpm build` to verify TypeScript and build.
 - Run `pnpm dev` to test locally on port 3000.
 
-## 11. Date Handling
+## 12. Date Handling
 
 - Use standard JavaScript `Date` APIs or a lightweight date library.
 - Keep date formatting consistent across the app.
 - Store dates in ISO format where possible.
 
-## 12. TanStack Start Patterns
+## 13. TanStack Start Patterns
 
 ### Isomorphic-by-Default
 
@@ -166,7 +248,7 @@ const Route = getRouteApi('/users/$userId')
 const userId = Route.useParams({ from: '/users/$userId' }).userId
 ```
 
-## 13. Performance
+## 14. Performance
 
 ### Bundle Optimization (CRITICAL)
 
@@ -226,9 +308,81 @@ function Parent() {
 }
 ```
 
-## 14. Testing
+## 15. Testing
 
 This project uses **Vitest** with **React Testing Library**.
+
+### For Large Projects - Test Maintenance
+
+When the project grows, maintain tests with these practices:
+
+1. **Test File Organization**
+```
+src/
+  features/
+    users/
+      components/
+        UserList.tsx
+        UserList.test.tsx      # Co-located tests
+      hooks/
+        use-users.ts
+        use-users.test.ts
+      api/
+        users.ts
+        users.test.ts          # Mock server functions
+```
+
+2. **Test Naming Conventions**
+- `*.test.ts` - Unit tests for utilities/hooks
+- `*.test.tsx` - Component tests
+- `*.integration.test.ts` - Integration tests
+- `*.e2e.test.ts` - End-to-end tests (separate folder)
+
+3. **Test Categories**
+```typescript
+describe('Unit', () => {
+  // Pure function tests - fast, no mocks
+})
+
+describe('Integration', () => {
+  // Multiple units working together - moderate speed
+})
+
+describe('Component', () => {
+  // User interactions - uses Testing Library
+})
+```
+
+4. **Running Tests in Large Projects**
+```bash
+pnpm test              # Run all tests
+pnpm test:watch       # Watch mode for development
+pnpm test:unit        # Run only unit tests
+pnpm test:components # Run only component tests
+pnpm test:coverage   # With coverage report
+```
+
+5. **Coverage Targets for Large Projects**
+- **Utilities/Hooks**: 90%+ coverage
+- **Shared Components**: 80%+ coverage  
+- **Feature Components**: 70%+ coverage
+- **Critical Paths**: 100% coverage (checkout, auth, payments)
+
+6. **Avoid Test Debt**
+- Never skip tests - fix or remove
+- Keep tests fast (<100ms each)
+- Mock external dependencies (API, timers)
+- Use `test.skip` only for known issues with tracking tickets
+- Review test output - fix flaky tests immediately
+
+7. **CI Integration**
+```yaml
+# .github/workflows/test.yml
+- name: Run tests
+  run: pnpm test --coverage
+- name: Upload coverage
+  uses: codecov/codecov-action@v4
+```
 
 ### Running Tests
 
@@ -400,7 +554,7 @@ Aim for:
 - **Components**: Critical paths covered
 - **Integration**: Key user flows covered
 
-## 15. New Feature Checklist
+## 16. New Feature Checklist
 
 - Add routes in `src/routes/` using `createFileRoute`.
 - Run `pnpm generate-routes` to regenerate the route tree.
