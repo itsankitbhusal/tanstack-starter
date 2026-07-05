@@ -13,8 +13,10 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as PrivateRouteImport } from './routes/_private'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PublicResetPasswordRouteImport } from './routes/_public/reset-password'
+import { Route as PublicNotFoundRouteImport } from './routes/_public/not-found'
 import { Route as PublicLoginRouteImport } from './routes/_public/login'
 import { Route as PublicForgotPasswordRouteImport } from './routes/_public/forgot-password'
+import { Route as PublicForbiddenRouteImport } from './routes/_public/forbidden'
 import { Route as PublicEmailSentRouteImport } from './routes/_public/email-sent'
 import { Route as PrivateDashboardIndexRouteImport } from './routes/_private/dashboard/index'
 
@@ -36,6 +38,11 @@ const PublicResetPasswordRoute = PublicResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicNotFoundRoute = PublicNotFoundRouteImport.update({
+  id: '/not-found',
+  path: '/not-found',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicLoginRoute = PublicLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -44,6 +51,11 @@ const PublicLoginRoute = PublicLoginRouteImport.update({
 const PublicForgotPasswordRoute = PublicForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicForbiddenRoute = PublicForbiddenRouteImport.update({
+  id: '/forbidden',
+  path: '/forbidden',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicEmailSentRoute = PublicEmailSentRouteImport.update({
@@ -60,16 +72,20 @@ const PrivateDashboardIndexRoute = PrivateDashboardIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/email-sent': typeof PublicEmailSentRoute
+  '/forbidden': typeof PublicForbiddenRoute
   '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
+  '/not-found': typeof PublicNotFoundRoute
   '/reset-password': typeof PublicResetPasswordRoute
   '/dashboard/': typeof PrivateDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/email-sent': typeof PublicEmailSentRoute
+  '/forbidden': typeof PublicForbiddenRoute
   '/forgot-password': typeof PublicForgotPasswordRoute
   '/login': typeof PublicLoginRoute
+  '/not-found': typeof PublicNotFoundRoute
   '/reset-password': typeof PublicResetPasswordRoute
   '/dashboard': typeof PrivateDashboardIndexRoute
 }
@@ -79,8 +95,10 @@ export interface FileRoutesById {
   '/_private': typeof PrivateRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_public/email-sent': typeof PublicEmailSentRoute
+  '/_public/forbidden': typeof PublicForbiddenRoute
   '/_public/forgot-password': typeof PublicForgotPasswordRoute
   '/_public/login': typeof PublicLoginRoute
+  '/_public/not-found': typeof PublicNotFoundRoute
   '/_public/reset-password': typeof PublicResetPasswordRoute
   '/_private/dashboard/': typeof PrivateDashboardIndexRoute
 }
@@ -89,16 +107,20 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/email-sent'
+    | '/forbidden'
     | '/forgot-password'
     | '/login'
+    | '/not-found'
     | '/reset-password'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/email-sent'
+    | '/forbidden'
     | '/forgot-password'
     | '/login'
+    | '/not-found'
     | '/reset-password'
     | '/dashboard'
   id:
@@ -107,8 +129,10 @@ export interface FileRouteTypes {
     | '/_private'
     | '/_public'
     | '/_public/email-sent'
+    | '/_public/forbidden'
     | '/_public/forgot-password'
     | '/_public/login'
+    | '/_public/not-found'
     | '/_public/reset-password'
     | '/_private/dashboard/'
   fileRoutesById: FileRoutesById
@@ -149,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicResetPasswordRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/not-found': {
+      id: '/_public/not-found'
+      path: '/not-found'
+      fullPath: '/not-found'
+      preLoaderRoute: typeof PublicNotFoundRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/login': {
       id: '/_public/login'
       path: '/login'
@@ -161,6 +192,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof PublicForgotPasswordRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/forbidden': {
+      id: '/_public/forbidden'
+      path: '/forbidden'
+      fullPath: '/forbidden'
+      preLoaderRoute: typeof PublicForbiddenRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/email-sent': {
@@ -193,15 +231,19 @@ const PrivateRouteWithChildren =
 
 interface PublicRouteChildren {
   PublicEmailSentRoute: typeof PublicEmailSentRoute
+  PublicForbiddenRoute: typeof PublicForbiddenRoute
   PublicForgotPasswordRoute: typeof PublicForgotPasswordRoute
   PublicLoginRoute: typeof PublicLoginRoute
+  PublicNotFoundRoute: typeof PublicNotFoundRoute
   PublicResetPasswordRoute: typeof PublicResetPasswordRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicEmailSentRoute: PublicEmailSentRoute,
+  PublicForbiddenRoute: PublicForbiddenRoute,
   PublicForgotPasswordRoute: PublicForgotPasswordRoute,
   PublicLoginRoute: PublicLoginRoute,
+  PublicNotFoundRoute: PublicNotFoundRoute,
   PublicResetPasswordRoute: PublicResetPasswordRoute,
 }
 

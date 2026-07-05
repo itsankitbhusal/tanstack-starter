@@ -2,6 +2,8 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastContainer } from 'react-toastify';
 
 import appCss from '../styles.css?url';
 import faviconUrl from '@/assets/Logo.png?url';
@@ -19,7 +21,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'My App',
+        title: 'PayNow Admin',
       },
     ],
     links: [
@@ -40,27 +42,35 @@ export const Route = createRootRoute({
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-          <HeadContent />
-        </head>
-        <body className="min-h-screen bg-background text-foreground">
-          <main>{children}</main>
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-          <Scripts />
-        </body>
-      </html>
+      <AuthProvider>
+        <html lang="en" suppressHydrationWarning>
+          <head>
+            <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+            <HeadContent />
+          </head>
+          <body className="min-h-screen bg-background text-foreground">
+            <main>{children}</main>
+            <ToastContainer
+              position="bottom-right"
+              autoClose={4000}
+              pauseOnHover
+              closeOnClick
+            />
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+            <Scripts />
+          </body>
+        </html>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

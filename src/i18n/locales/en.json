@@ -34,7 +34,7 @@
       "subtitle": "Sign in to continue to {{tenantName}} Dashboard",
       "email": {
         "label": "Email",
-        "placeholder": "mms.admin@example.com"
+        "placeholder": "admin@example.com"
       },
       "password": {
         "label": "Password",
@@ -51,7 +51,7 @@
       "subtitle": "Please enter your email and we'll send you instructions to reset your password.",
       "email": {
         "label": "Email",
-        "placeholder": "mms.admin@example.com"
+        "placeholder": "admin@example.com"
       },
       "submitting": "Sending Link...",
       "backToLogin": "Back to Login"

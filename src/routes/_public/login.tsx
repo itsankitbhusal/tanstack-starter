@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { toast } from 'react-hot-toast';
 
 import { LoginForm } from '@/features/auth/components/index';
 import { type LoginFormValues } from '@/lib/schemas/index';
+import { useLogin } from '@/hooks/use-auth';
 
 export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
@@ -10,11 +10,13 @@ export const Route = createFileRoute('/_public/login')({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login, isLoading } = useLogin();
 
   const handleSubmit = async (data: LoginFormValues) => {
-    console.log('Login data:', data);
-    toast.success('Login successful!');
-    navigate({ to: '/dashboard' });
+    await login({
+      username: data.username,
+      password: data.password,
+    });
   };
 
   const handleForgotPassword = () => {
@@ -24,7 +26,7 @@ function LoginPage() {
   return (
     <LoginForm
       onSubmit={handleSubmit}
-      isSubmitting={false}
+      isSubmitting={isLoading}
       onForgotPassword={handleForgotPassword}
     />
   );

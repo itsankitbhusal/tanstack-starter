@@ -13,6 +13,7 @@ import {
 
 import { NavUser } from '@/components/nav-user';
 import { BRAND } from '@/config/branding/config';
+import { useLogout } from '@/hooks/use-auth';
 
 interface MenuConfigItem {
   label: string
@@ -68,8 +69,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     [],
   );
 
+  const { logout } = useLogout();
+
   const handleLogout = () => {
-    window.location.href = '/login';
+    logout();
   };
 
   const handleProfile = () => {
