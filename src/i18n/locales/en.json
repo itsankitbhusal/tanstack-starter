@@ -97,12 +97,12 @@
   },
   "layout": {
     "auth": {
-      "tagline": "| Merchant Management System",
-      "description": "Monitor and control business operations including accounts, merchants, outlets, terminals, products and invoices.",
-      "poweredBy": "Modern, Secured, and Reliable Payment Gateway, powered by:",
-      "cybersource": "cybersource",
-      "cybersourceSub": "A Visa Solution",
-      "gateway": "gateway"
+      "tagline": "| {{tagline}}",
+      "description": "{{description}}",
+      "poweredBy": "{{poweredBy}}",
+      "cybersource": "{{gatewayName}}",
+      "cybersourceSub": "{{gatewaySub}}",
+      "gateway": "{{gatewayType}}"
     }
   },
   "footer": {

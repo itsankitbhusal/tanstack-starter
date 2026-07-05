@@ -1,6 +1,6 @@
 import { axiosClient } from '@/lib/api/axios-client';
 
-const REFRESH_TOKEN_STORAGE_KEY = 'auth-refresh-token';
+const REFRESH_TOKEN_STORAGE_KEY = 'refresh-token';
 
 const isBrowser = typeof window !== 'undefined';
 

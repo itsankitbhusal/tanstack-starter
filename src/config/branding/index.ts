@@ -12,7 +12,7 @@ import logoIcon from '@/assets/Logo.png?url';
 
 export const defaultBranding: BrandingConfig = {
   tenantId: 'default',
-  tenantName: 'My App',
+  tenantName: 'PayNow',
   brandColor: '#0f4c81',
   brandColorForeground: '#ffffff',
   logoUrl: logoFull as string,
