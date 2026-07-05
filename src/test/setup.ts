@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Mock IntersectionObserver for components that use it
 globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -12,7 +12,7 @@ globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
   takeRecords: vi.fn(),
-}))
+}));
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -27,7 +27,7 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock scrollTo
-window.scrollTo = vi.fn()
+window.scrollTo = vi.fn();

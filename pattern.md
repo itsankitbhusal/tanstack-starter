@@ -24,27 +24,58 @@ Routes are defined in `src/routes/` using TanStack Router's file-based routing w
 - Add breadcrumb entries when adding new routes.
 - Route types are auto-generated in `routeTree.gen.ts` - use `getRouteApi` for type-safe route access.
 
-## 3. Module Shape
+## 3. Component Folder Structure
 
-For new features:
+All components, hooks, and utilities MUST be in their own folder with co-located tests.
 
-```text
+> **Exception**: shadcn/ui components are kept in `src/components/ui/` as-is (they follow shadcn conventions).
+
+### Folder Structure with Barrel Exports
+
+Use `@/` absolute path imports (configured via tsconfigPaths):
+
+```
 src/
-  routes/
-    feature-name/
-      index.tsx        # List page
-      create.tsx       # Create page
-      $id.tsx          # Detail page
-      $id.edit.tsx     # Edit page
   components/
     feature-name/
-      FeatureList.tsx
-      FeatureForm.tsx
-      FeatureDetail.tsx
-  lib/
-    feature-api.ts     # API definitions
+      index.ts              # Barrel export
+      ComponentName.tsx     # Main component
+      ComponentName.test.tsx # REQUIRED: Co-located test
+      sub-component.tsx
   hooks/
-    use-feature.ts    # Custom hooks
+    use-feature/
+      index.ts              # Barrel export
+      use-feature.ts       # Hook implementation
+      use-feature.test.ts  # REQUIRED: Co-located test
+  lib/
+    utils.ts               # Shared utilities
+    utils.test.ts          # REQUIRED: Co-located test
+  config/
+    branding.ts           # Configuration
+```
+
+### Component Structure Rules
+
+1. **Every component in its own folder** - No loose files in component directories
+2. **Co-located tests** - Test files next to the component/hook they test
+3. **Barrel exports** - Use `index.ts` for clean imports
+4. **Naming** - PascalCase for components, camelCase for hooks
+
+```typescript
+// Instead of: src/components/Button.tsx
+// Use: src/components/button/Button.tsx
+
+// Good structure:
+src/components/button/
+├── index.ts          # export { Button } from './Button'
+├── Button.tsx        # Component implementation
+└── Button.test.tsx  # Co-located test (REQUIRED)
+
+// Good structure for hooks:
+src/hooks/use-toggle/
+├── index.ts         # export { useToggle } from './use-toggle'
+├── use-toggle.ts    # Hook implementation
+└── use-toggle.test.ts # Co-located test (REQUIRED)
 ```
 
 - Keep pages focused: list pages handle table state and navigation, form pages handle validation and submission.
@@ -308,37 +339,53 @@ function Parent() {
 }
 ```
 
-## 15. Testing
+## 15. Testing (MANDATORY)
 
 This project uses **Vitest** with **React Testing Library**.
 
-### For Large Projects - Test Maintenance
+### MANDATORY TEST RULES
 
-When the project grows, maintain tests with these practices:
+**Every new component, hook, utility, and function MUST have a co-located test file.**
 
-1. **Test File Organization**
+- Components → `ComponentName.test.tsx`
+- Hooks → `useHookName.test.ts`
+- Utilities → `utils.test.ts`
+- Functions → `functionName.test.ts`
+
+No exceptions. Tests are NOT optional.
+
+### Test File Organization
+
 ```
 src/
-  features/
-    users/
-      components/
-        UserList.tsx
-        UserList.test.tsx      # Co-located tests
-      hooks/
-        use-users.ts
-        use-users.test.ts
-      api/
-        users.ts
-        users.test.ts          # Mock server functions
+  components/
+    button/
+      index.ts              # Barrel export
+      Button.tsx           # Component
+      Button.test.tsx     # REQUIRED
+    app-footer/
+      index.ts
+      AppFooter.tsx
+      AppFooter.test.tsx # REQUIRED
+  hooks/
+    use-toggle/
+      index.ts
+      use-toggle.ts
+      use-toggle.test.ts  # REQUIRED
+  lib/
+    utils/
+      index.ts
+      utils.ts
+      utils.test.ts      # REQUIRED
 ```
 
-2. **Test Naming Conventions**
+### Test Naming Conventions
 - `*.test.ts` - Unit tests for utilities/hooks
 - `*.test.tsx` - Component tests
 - `*.integration.test.ts` - Integration tests
 - `*.e2e.test.ts` - End-to-end tests (separate folder)
 
-3. **Test Categories**
+### Test Categories
 ```typescript
 describe('Unit', () => {
   // Pure function tests - fast, no mocks
@@ -353,7 +400,7 @@ describe('Component', () => {
 })
 ```
 
-4. **Running Tests in Large Projects**
+### Running Tests
 ```bash
 pnpm test              # Run all tests
 pnpm test:watch       # Watch mode for development
@@ -554,7 +601,99 @@ Aim for:
 - **Components**: Critical paths covered
 - **Integration**: Key user flows covered
 
-## 16. New Feature Checklist
+## 16. Branding Configuration
+
+All tenant-specific branding should use the centralized config in `src/config/branding.ts`.
+
+```typescript
+// src/config/branding.ts
+export interface BrandingConfig {
+  tenantId: string;
+  tenantName: string;
+  brandColor: string;
+  brandColorForeground: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+}
+
+export const defaultBranding: BrandingConfig = {
+  tenantId: 'default',
+  tenantName: 'BNB',
+  brandColor: '#871d36',
+  brandColorForeground: '#ffffff',
+};
+```
+
+### Using Branding
+
+```typescript
+import { usePublicAuthContext } from '@/contexts/PublicAuthContext';
+
+function MyComponent() {
+  const { tenantName, brandColor, logoUrl } = usePublicAuthContext();
+  // Use in your component
+}
+```
+
+### CSS Variables
+
+Brand colors are available as CSS variables:
+- `--tenant-primary` - Main brand color (default: #871d36)
+- `--tenant-primary-foreground` - Text on brand color
+
+## 17. Internationalization (i18n)
+
+All user-facing text must come from translation files. No hardcoded strings in components.
+
+### File Structure
+
+```
+src/i18n/
+├── i18n.ts              # i18n utilities and t() function
+└── locales/
+    └── en.json          # English translations
+```
+
+### Adding Translations
+
+1. Add keys to `src/i18n/locales/en.json`
+2. Use the `t()` function in components
+
+### Translation File Structure
+
+```json
+{
+  "common": {
+    "required": "required",
+    "loading": "Loading..."
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back!",
+      "subtitle": "Sign in to continue to {{tenantName}} Dashboard"
+    }
+  }
+}
+```
+
+### Using Translations
+
+```typescript
+import { t } from '@/i18n/i18n';
+
+// Simple translation
+<t('auth.login.title') />
+
+// With parameters (use {{variableName}} in JSON)
+<t('auth.login.subtitle', 'en', { tenantName }) />
+```
+
+### Adding New Languages
+
+1. Create `src/i18n/locales/{lang}.json`
+2. Update `src/i18n/i18n.ts` to include the new locale
+
+## 18. New Feature Checklist
 
 - Add routes in `src/routes/` using `createFileRoute`.
 - Run `pnpm generate-routes` to regenerate the route tree.
@@ -562,5 +701,7 @@ Aim for:
 - Add pages with proper form validation using React Hook Form + Zod.
 - **Add tests for new components, hooks, and utilities.**
 - Add shared components to `src/components/`.
+- Use branding config for tenant-specific values.
+- Add all user-facing text to translation files.
 - Run `pnpm build` to verify.
 - Run `pnpm test` to ensure tests pass.

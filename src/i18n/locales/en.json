@@ -1,0 +1,115 @@
+{
+  "common": {
+    "required": "required",
+    "optional": "optional",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "reset": "Reset",
+    "apply": "Apply",
+    "actions": "Actions",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "remove": "Remove",
+    "noData": "No data available",
+    "noResults": "No results found"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back!",
+      "subtitle": "Sign in to continue to {{tenantName}} Dashboard",
+      "email": {
+        "label": "Email",
+        "placeholder": "mms.admin@example.com"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Your admin password"
+      },
+      "forgotPassword": "Forgot Password?",
+      "submitting": "Signing In...",
+      "submit": "Sign In",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "forgotPassword": {
+      "title": "Forgot Your Password?",
+      "subtitle": "Please enter your email and we'll send you instructions to reset your password.",
+      "email": {
+        "label": "Email",
+        "placeholder": "mms.admin@example.com"
+      },
+      "submitting": "Sending Link...",
+      "backToLogin": "Back to Login"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "subtitle": "Create a new password for your account.",
+      "newPassword": {
+        "label": "New Password",
+        "placeholder": "********"
+      },
+      "confirmPassword": {
+        "label": "Confirm New Password",
+        "placeholder": "********"
+      },
+      "submitting": "Resetting...",
+      "submit": "Reset Password",
+      "backToLogin": "Back to Login"
+    },
+    "passwordRequirements": {
+      "title": "Password Requirements",
+      "minLength": "Minimum 8 characters",
+      "uppercase": "At least one uppercase letter",
+      "lowercase": "At least one lowercase letter",
+      "number": "At least one number",
+      "special": "At least one special character"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must be at most {{max}} characters",
+    "passwordMatch": "Passwords do not match",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Log Out"
+  },
+  "layout": {
+    "auth": {
+      "tagline": "| Merchant Management System",
+      "description": "Monitor and control business operations including accounts, merchants, outlets, terminals, products and invoices.",
+      "poweredBy": "Modern, Secured, and Reliable Payment Gateway, powered by:",
+      "cybersource": "cybersource",
+      "cybersourceSub": "A Visa Solution",
+      "gateway": "gateway"
+    }
+  },
+  "footer": {
+    "copyright": "© 2024 BNB. All rights reserved.",
+    "version": "Version",
+    "poweredBy": "Powered by Horizon.",
+    "stagingLabel": "Staging Environment",
+    "environment": "Environment"
+  }
+}

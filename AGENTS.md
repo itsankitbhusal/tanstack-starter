@@ -37,7 +37,14 @@ pnpm install   # Already done
 pnpm dev      # Starts dev server on port 3000
 pnpm build    # Production build
 pnpm preview  # Preview production build
+pnpm test     # Run tests
+pnpm lint     # Run ESLint
+pnpm lint:fix # Fix ESLint issues
 ```
+
+## Git Hooks (Husky)
+- Pre-commit hook runs lint-staged (lint + tests on staged files)
+- Runs automatically on `git commit`
 
 ## Next Steps
 - Add routes in `src/routes/`
